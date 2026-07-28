@@ -1,0 +1,80 @@
+Q1 Excat: Which phrase means Surrender and which sentence it is used in?
+Expected: Yield to
+Got: The context does not provide information about any phrases or sentences related to "surrender." Therefore, I cannot answer your question based on the provided context.
+Pass/Fail: Fail
+---
+Q2 Excat: Is Yammer on phrase used anywhere?
+Expected: Yes
+Got: The context provided does not mention "Yammer on phrase" or any related information about it. Therefore, I cannot determine if it is used anywhere based on the provided context.
+Pass/Fail: Fail
+---
+Q3 Excat: Leave a group by moving in a different direction is meaning of which phrase?
+Expected: Peel away or Peel away from
+Got: The phrase you are looking for is "to break away."
+Pass/Fail: Fail
+---
+Q4 Excat: Is visit related to come by phrase?
+Expected: Yes
+Got: Yes, "visit" is related to the phrase "come by," as both refer to the action of going to see someone or a place.
+Pass/Fail: Pass
+---
+Q5 Excat: Sell something in an auction is related to which phrase?
+Expected: Auction off
+Got: The phrase related to "sell something in an auction" is "sell at auction."
+Pass/Fail: Fail
+---
+Q6 Semantic: To remain faithful to something or someone and to stand to is closely related to which phrase?
+Expected: abide by
+Got: The phrase closely related to "to remain faithful to something or someone and to stand to" is "to stand by."
+Pass/Fail: Fail
+---
+Q7 Semantic: To fall suddenly into a very deep sleep is closely related to which phrase?
+Expected: Zonk out
+Got: The context provided does not specify a phrase related to falling suddenly into a very deep sleep.
+Pass/Fail: Fail
+---
+Q8 Semantic: zip your lip is similar to which phrase?
+Expected: Zip up
+Got: The phrase "zip your lip" is similar to "keep quiet" or "be quiet."
+Pass/Fail: Fail
+---
+Q9 Semantic: Hair raiser is closely related to which phrase?
+Expected: nail biter
+Got: The context does not provide any information about the phrase "hair raiser" or its related phrases. Therefore, I cannot answer your question based on the provided context.
+Pass/Fail: Fail
+---
+Q10 Semantic: I am all ears is closely related to which phrase?
+Expected: None
+Got: The phrase "I am all ears" is closely related to the phrase "I am listening."
+Pass/Fail: Fail
+---
+Q11 Not Found: which sentence example is given for abashed by?
+Expected: None
+Got: The context provided does not include any specific sentence example for "abashed by."
+Pass/Fail: Fail
+---
+Q12 Not Found: which sentence example is given for above par?
+Expected: None
+Got: The context provided does not include any sentences or examples related to "above par." Therefore, I cannot provide an answer based on the information given.
+Pass/Fail: Fail
+---
+Q13 Not Found: ace in the hole is a phrase given in the context, can you find it?
+Expected: None
+Got: The phrase "ace in the hole" is not provided in the context you've given. Therefore, I cannot find it.
+Pass/Fail: Pass
+---
+Q14 Not Found: Is absent minded phrase available?
+Expected: No
+Got: The context does not provide any information about the availability of the phrase "absent minded." Therefore, I cannot answer your question.
+Pass/Fail: Fail
+---
+Q15 Not Found: Is there any phrase that starts with letter x?
+Expected: No
+Got: The context does not provide any phrases that start with the letter "x." Therefore, I cannot answer the question based on the provided information.
+Pass/Fail: Fail
+---
+
+Exact:     1/10
+Semantic:  0/0
+Not Found: 0/0
+Overall:   2/15

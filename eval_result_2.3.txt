@@ -1,0 +1,80 @@
+Q1 Exact: Which phrase means Surrender and which sentence is it used in?
+Expected: ['Yield to', 'Give up', 'Give in', 'Give way to', 'Give yourself up']
+Got: The phrase that means "Surrender" is "Give in." It is used in the sentence: "They GAVE IN when the police surrounded the building."
+Pass/Fail: Pass
+---
+Q2 Exact: What does Yammer on mean?
+Expected: Talk continuously
+Got: This information is not in the provided context.
+Pass/Fail: Fail
+---
+Q3 Exact: Leave a group by moving in a different direction is meaning of which phrase?
+Expected: ['Peel away', 'Peel away from']
+Got: The phrase is "Peel away."
+Pass/Fail: Pass
+---
+Q4 Exact: Is visit related to come by phrase?
+Expected: Yes
+Got: Yes, "Come by" has the related meaning of "Visit."
+Pass/Fail: Pass
+---
+Q5 Exact: Sell something in an auction is related to which phrase?
+Expected: Auction off
+Got: Auction off
+Pass/Fail: Pass
+---
+Q6 Semantic: To remain faithful to something or someone and to stand to is closely related to which phrase?
+Expected: ['abide by', 'stick by', 'stand by', 'stick to']
+Got: The phrase "Stick to" relates to remaining faithful to something or someone.
+Pass/Fail: Pass
+---
+Q7 Semantic: To fall suddenly into a very deep sleep is closely related to which phrase?
+Expected: Zonk out
+Got: This information is not in the provided context.
+Pass/Fail: Fail
+---
+Q8 Semantic: zip your lip is similar to which phrase?
+Expected: ['Zip up', 'Zip it']
+Got: "Zip it" is similar to "zip your lip."
+Pass/Fail: Pass
+---
+Q9 Semantic: Hair raiser is closely related to which phrase?
+Expected: nail biter
+Got: This information is not in the provided context.
+Pass/Fail: Fail
+---
+Q10 Not Found: I am all ears is closely related to which phrase?
+Expected: None
+Got: This information is not in the provided context.
+Pass/Fail: Pass
+---
+Q11 Not Found: which sentence example is given for abashed by?
+Expected: None
+Got: This information is not in the provided context.
+Pass/Fail: Pass
+---
+Q12 Not Found: which sentence example is given for above par?
+Expected: None
+Got: This information is not in the provided context.
+Pass/Fail: Pass
+---
+Q13 Not Found: ace in the hole is a phrase given in the context, can you find it?
+Expected: None
+Got: This information is not in the provided context.
+Pass/Fail: Pass
+---
+Q14 Not Found: Is absent minded phrase available?
+Expected: No
+Got: This information is not in the provided context.
+Pass/Fail: Pass
+---
+Q15 Not Found: Is there any phrase that starts with letter x?
+Expected: No
+Got: This information is not in the provided context.
+Pass/Fail: Pass
+---
+
+Exact:     4/5
+Semantic:  2/4
+Not Found: 6/6
+Overall:   12/15

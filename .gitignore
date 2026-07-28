@@ -1,0 +1,6 @@
+vector_store/ 
+__pycache__/ 
+*.pyc 
+.env 
+Attachments/ 
+private_code_files/ 
