@@ -3,6 +3,15 @@
 ## What it does
 This system provides a way to get answers to the questions asked by users about a given document. The document types supported currently are plain textual PDF files as the retrieval of text from these types of PDF files is simple compared to scanned PDFs.
 Apart from getting the answers, users also get source citations showing which chunk the answer came from and a relevance score.
+The system is accessible via a web interface — upload a PDF, ask questions, and view answers with source citations directly in the browser.
+
+## Screenshots
+
+**Initial view**
+![Initial UI](screenshot-empty.png)
+
+**With document uploaded and question answered**
+![Demo UI](screenshot-demo.png)
 
 ## How it works
 First a file is processed by the system to extract its text in chunks. The chunks are converted to vector embeddings using the OpenAI API and the `text-embedding-3-small` model. The vector embeddings are stored in ChromaDB collections. When a user asks a question, the related vector embeddings are fetched from the database using the vector embedding of the question. These related embeddings become the context for the model, to which the question is passed in order to generate the answer.
@@ -44,7 +53,7 @@ Expand the system to support scanned PDFs requiring OCR, as scanned PDFs are com
 Install Python 3.10+, then install dependencies:
 
 ```bash
-pip install pdfplumber tiktoken httpx chromadb
+pip install pdfplumber tiktoken httpx chromadb fastapi uvicorn python-multipart
 ```
 
 Generate an OpenAI API key and save it as an environment variable. The API key is fetched from the environment instead of being hardcoded in the script:
@@ -53,14 +62,12 @@ Generate an OpenAI API key and save it as an environment variable. The API key i
 set OPENAI_API_KEY=your_key_here  # Windows
 ```
 
-Process a PDF and store embeddings:
-
 ```bash
-python store-embedding.py
+# Run the web interface
+cd web
+uvicorn main:app --reload
+
+# Then open http://127.0.0.1:8000 in your browser
 ```
 
-Run the conversation script for Q&A. Conversation history is maintained to provide context to the model:
 
-```bash
-python completeapiwithconversationhistory.py
-```

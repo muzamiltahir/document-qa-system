@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document Q&A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #F8F6F1;
+    --panel:     #EDE8E0;
+    --border:    #D5CEC4;
+    --text:      #2C3E50;
+    --muted:     #7A8A98;
+    --accent:    #7B9E87;
+    --accent-lt: #EAF2EC;
+    --danger:    #E8857A;
+    --white:     #FFFFFF;
+    --shadow:    0 2px 12px rgba(44,62,80,0.08);
+    --radius:    10px;
+    --display:   'DM Serif Display', serif;
+    --body:      'Inter', sans-serif;
+    --mono:      'JetBrains Mono', monospace;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── LAYOUT ── */
+  .app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    grid-column: 1 / -1;
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    background: var(--white);
+  }
+
+  .header h1 {
+    font-family: var(--display);
+    font-size: 26px;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .header-sub {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ── LEFT PANEL ── */
+  .left-panel {
+    border-right: 1px solid var(--border);
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow-y: auto;
+  }
+
+  .panel-section {
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  /* Upload area */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: var(--bg);
+  }
+
+  .upload-zone:hover {
+    border-color: var(--accent);
+    background: var(--accent-lt);
+  }
+
+  .upload-zone.dragover {
+    border-color: var(--accent);
+    background: var(--accent-lt);
+  }
+
+  .upload-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .upload-zone p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .upload-zone strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  #file-input { display: none; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--white);
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .btn-danger:hover:not(:disabled) { background: #fdf0ef; }
+
+  .upload-status {
+    margin-top: 12px;
+    font-size: 12.5px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+  }
+
+  .upload-status.success {
+    background: var(--accent-lt);
+    color: #3d7a52;
+    display: block;
+  }
+
+  .upload-status.error {
+    background: #fdf0ef;
+    color: #c0392b;
+    display: block;
+  }
+
+  .upload-status.loading {
+    background: var(--panel);
+    color: var(--muted);
+    display: block;
+  }
+
+  /* History */
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 380px;
+    overflow-y: auto;
+  }
+
+  .history-empty {
+    font-size: 12.5px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .history-item {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+  }
+
+  .history-q {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .history-a {
+    font-size: 12px;
+    color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .history-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  /* ── RIGHT PANEL ── */
+  .right-panel {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    gap: 24px;
+    overflow-y: auto;
+  }
+
+  /* Question input */
+  .question-area {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .question-area label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  #question-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--body);
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #question-input:focus {
+    border-color: var(--accent);
+    background: var(--white);
+  }
+
+  #question-input::placeholder { color: var(--muted); }
+
+  .btn-ask {
+    background: var(--accent);
+    color: var(--white);
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .btn-ask:hover:not(:disabled) { opacity: 0.88; }
+
+  /* Answer area */
+  .answer-area {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    display: none;
+  }
+
+  .answer-area.visible { display: block; }
+
+  .answer-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  #answer-text {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  /* Citations */
+  .citations-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .citations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Signature element: left border height = relevance % */
+  .citation-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .citation-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 3px 0 0 3px;
+    /* height set dynamically via JS based on relevance */
+  }
+
+  .citation-chunk {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--accent-lt);
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .citation-relevance {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .citation-relevance span {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* Loading state */
+  .loading-indicator {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 16px 0;
+  }
+
+  .loading-indicator.visible { display: flex; }
+
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state-icon { font-size: 40px; margin-bottom: 16px; }
+  .empty-state h2 { font-family: var(--display); font-size: 22px; color: var(--text); font-weight: 400; margin-bottom: 8px; }
+  .empty-state p { font-size: 13px; max-width: 320px; margin: 0 auto; }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .app { grid-template-columns: 1fr; }
+    .left-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    .right-panel { padding: 20px; }
+    .header { padding: 16px 20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1>Document Q&amp;A</h1>
+    <span class="header-sub">Ask questions about any PDF document</span>
+  </header>
+
+  <!-- LEFT PANEL -->
+  <aside class="left-panel">
+
+    <!-- Upload -->
+    <div class="panel-section">
+      <p class="panel-label">Document</p>
+      <div class="upload-zone" id="upload-zone">
+        <span class="upload-icon">📄</span>
+        <p><strong>Drop a PDF here</strong><br>or click to browse</p>
+        <input type="file" id="file-input" accept=".pdf">
+      </div>
+      <button class="btn btn-primary" id="upload-btn" disabled>Upload Document</button>
+      <div class="upload-status" id="upload-status"></div>
+    </div>
+
+    <!-- Conversation History -->
+    <div class="panel-section" style="flex:1;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+        <p class="panel-label" style="margin-bottom:0;">History</p>
+        <button class="btn btn-danger" id="clear-btn">Clear</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <p class="history-empty">No conversation yet.</p>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <main class="right-panel">
+
+    <!-- Empty state shown before first question -->
+    <div class="empty-state" id="empty-state">
+      <div class="empty-state-icon">💬</div>
+      <h2>Ready to answer</h2>
+      <p>Upload a PDF on the left, then ask a question below.</p>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-indicator" id="loading">
+      <div class="spinner"></div>
+      <span>Searching document and generating answer…</span>
+    </div>
+
+    <!-- Answer -->
+    <div class="answer-area" id="answer-area">
+      <p class="answer-label">Answer</p>
+      <p id="answer-text"></p>
+      <p class="citations-label">Sources</p>
+      <div class="citations-list" id="citations-list"></div>
+    </div>
+
+    <!-- Question input — pinned at bottom via order -->
+    <div class="question-area" style="margin-top:auto;">
+      <label for="question-input">Ask a question</label>
+      <div class="input-row">
+        <input
+          type="text"
+          id="question-input"
+          placeholder="e.g. What does 'Auction off' mean?"
+          autocomplete="off"
+        >
+        <button class="btn btn-ask" id="ask-btn">Ask</button>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+  // ── Session ID (hidden from user) ──
+  const sessionId = 'sess_' + Math.random().toString(36).slice(2, 11);
+
+  // ── Element refs ──
+  const uploadZone   = document.getElementById('upload-zone');
+  const fileInput    = document.getElementById('file-input');
+  const uploadBtn    = document.getElementById('upload-btn');
+  const uploadStatus = document.getElementById('upload-status');
+  const questionInput= document.getElementById('question-input');
+  const askBtn       = document.getElementById('ask-btn');
+  const clearBtn     = document.getElementById('clear-btn');
+  const historyList  = document.getElementById('history-list');
+  const emptyState   = document.getElementById('empty-state');
+  const loading      = document.getElementById('loading');
+  const answerArea   = document.getElementById('answer-area');
+  const answerText   = document.getElementById('answer-text');
+  const citationsList= document.getElementById('citations-list');
+
+  let selectedFile = null;
+  let conversationHistory = [];
+
+  // ── File selection ──
+  uploadZone.addEventListener('click', () => fileInput.click());
+
+  uploadZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+  });
+
+  uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('dragover');
+  });
+
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+      selectedFile = file;
+      updateUploadZone(file.name);
+      uploadBtn.disabled = false;
+    }
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) {
+      selectedFile = fileInput.files[0];
+      updateUploadZone(selectedFile.name);
+      uploadBtn.disabled = false;
+    }
+  });
+
+  function updateUploadZone(name) {
+    uploadZone.innerHTML = `
+      <span class="upload-icon">✅</span>
+      <p><strong>${name}</strong><br><span style="font-size:11px;">Click Upload to process</span></p>
+      <input type="file" id="file-input" accept=".pdf" style="display:none">
+    `;
+    // re-bind after innerHTML replace
+    uploadZone.querySelector('#file-input').addEventListener('change', e => {
+      if (e.target.files[0]) {
+        selectedFile = e.target.files[0];
+        updateUploadZone(selectedFile.name);
+      }
+    });
+  }
+
+  // ── Upload ──
+  uploadBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
+    uploadBtn.disabled = true;
+    setUploadStatus('loading', 'Processing document…');
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const res = await fetch('/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (data.status === 'success') {
+        setUploadStatus('success', `✓ Ready — ${data.chunks} chunks indexed`);
+      } else {
+        setUploadStatus('error', `✗ ${data.message}`);
+        uploadBtn.disabled = false;
+      }
+    } catch (err) {
+      setUploadStatus('error', '✗ Upload failed. Is the server running?');
+      uploadBtn.disabled = false;
+    }
+  });
+
+  function setUploadStatus(type, msg) {
+    uploadStatus.className = `upload-status ${type}`;
+    uploadStatus.textContent = msg;
+  }
+
+  // ── Ask ──
+  askBtn.addEventListener('click', askQuestion);
+  questionInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') askQuestion();
+  });
+
+  async function askQuestion() {
+    const question = questionInput.value.trim();
+    if (!question) return;
+
+    questionInput.value = '';
+    askBtn.disabled = true;
+    emptyState.style.display = 'none';
+    answerArea.classList.remove('visible');
+    loading.classList.add('visible');
+
+    try {
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, sessionid: sessionId })
+      });
+
+      const data = await res.json();
+
+      loading.classList.remove('visible');
+      answerArea.classList.add('visible');
+
+      answerText.textContent = data.answer;
+
+      // Citations
+      citationsList.innerHTML = '';
+      data.citation.forEach(c => {
+        const card = document.createElement('div');
+        card.className = 'citation-card';
+
+        // Signature element: bar height proportional to relevance
+        const barHeight = Math.round(c.relevance * 100);
+        card.innerHTML = `
+          <div class="citation-bar" style="height:${barHeight}%"></div>
+          <span class="citation-chunk">${c.chunk}</span>
+          <span class="citation-relevance">Relevance <span>${(c.relevance * 100).toFixed(0)}%</span></span>
+        `;
+        citationsList.appendChild(card);
+      });
+
+      // History
+      conversationHistory.push({ question, answer: data.answer });
+      renderHistory();
+
+    } catch (err) {
+      loading.classList.remove('visible');
+      answerArea.classList.add('visible');
+      answerText.textContent = 'Something went wrong. Please try again.';
+      citationsList.innerHTML = '';
+    }
+
+    askBtn.disabled = false;
+    questionInput.focus();
+  }
+
+  // ── History ──
+  function renderHistory() {
+    if (conversationHistory.length === 0) {
+      historyList.innerHTML = '<p class="history-empty">No conversation yet.</p>';
+      return;
+    }
+
+    historyList.innerHTML = '';
+    [...conversationHistory].reverse().forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'history-item';
+      div.innerHTML = `
+        <p class="history-q">Q: ${item.question}</p>
+        <p class="history-a">${item.answer}</p>
+      `;
+      historyList.appendChild(div);
+    });
+  }
+
+  // ── Clear ──
+  clearBtn.addEventListener('click', async () => {
+    try {
+      await fetch('/clear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionid: sessionId })
+      });
+    } catch (_) {}
+
+    conversationHistory = [];
+    renderHistory();
+    answerArea.classList.remove('visible');
+    emptyState.style.display = '';
+    answerText.textContent = '';
+    citationsList.innerHTML = '';
+  });
+</script>
+</body>
+</html>
