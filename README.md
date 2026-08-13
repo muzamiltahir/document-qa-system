@@ -86,4 +86,6 @@ uvicorn main:app --reload
 # Then open http://127.0.0.1:8000 in your browser
 ```
 
-
+### Quick Start
+A sample document is included in the `samples/` folder. 
+Upload `samples/sample-document.pdf` through the web interface to test immediately.
