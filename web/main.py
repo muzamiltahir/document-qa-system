@@ -21,7 +21,6 @@ os.makedirs(UPLOADS_DIR, exist_ok=True)
 app = FastAPI()
 
 chroma_client = chromadb.PersistentClient(path=str(VECTOR_STORE))
-collection = chroma_client.get_or_create_collection(name="documents3")
 
 origins = [    
     "http://localhost",
@@ -85,6 +84,12 @@ async def ask_question(user_input:UserInput):
         conversation_history = conversation_store[sessionid]
 
     question_embedding = await utils.generate_embeddings(question)   
+    
+    collection = chroma_client.get_or_create_collection(
+        name="documents3",
+        metadata={"hnsw:space": "cosine"}
+    )
+
     query_result = collection.query(
     query_embeddings=question_embedding,
     n_results = 10
@@ -130,6 +135,11 @@ async def agent_ask(user_input: UserInput) -> Output:
 
     conversation_history = conversation_store.get(sessionid,[])
 
+    collection = chroma_client.get_or_create_collection(
+        name="documents3",
+        metadata={"hnsw:space": "cosine"}
+    )
+
     result = await run_agent(
             question=question,
             collection=collection,
@@ -141,7 +151,8 @@ async def agent_ask(user_input: UserInput) -> Output:
     output = Output(answer=generated_answer,toolcalls=result['tool_calls_made'])    
 
     for s_id in result['sources']:
-        citation = Citation(chunk = s_id ,relevance = 0.0)
+        relevance = round(1 - (s_id['distance'] / 2), 2)
+        citation = Citation(chunk = s_id['chunk'] ,relevance = relevance)
         output.citation.append(citation)
 
     conversation_history.append({

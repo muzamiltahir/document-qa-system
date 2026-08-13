@@ -59,9 +59,24 @@ pip install pdfplumber tiktoken httpx chromadb fastapi uvicorn python-multipart
 
 Generate an OpenAI API key and save it as an environment variable. The API key is fetched from the environment instead of being hardcoded in the script:
 
+### OpenAI API Key
+You need an OpenAI API key to run this project.
+1. Create an account at https://platform.openai.com
+2. Go to API Keys and generate a new key
+3. Add a minimum of $5 credit — this is enough for extensive testing
+4. Set the environment variable:
+
+```bash
+set OPENAI_API_KEY=your_key_here  # Windows
+export OPENAI_API_KEY=your_key_here  # Mac/Linux
+```
+
+Estimated cost: a few cents per session for normal usage.
+
 ```bash
 set OPENAI_API_KEY=your_key_here  # Windows
 ```
+Estimated cost: a few cents per session for normal usage.
 
 ```bash
 # Run the web interface

@@ -102,14 +102,14 @@ not included at write time.
 chunk metadata:
     {"source": "chunk_0", "filename": "document.pdf"}
 Then get_document_info can retrieve it from any chunk's metadata.
-**Status:** Open
+**Status:** Fixed — filename now stored in chunk metadata during ingestion
 
 ## F009 — Agent Citations Show 0% Relevance
 **Cause:** Agent returns chunk IDs from tool calls but no distance scores.
 Distance scores only available from direct ChromaDB query results.
 **Fix:** Return distances alongside sources from search_documents tool,
 pass them through run_agent return value.
-**Status:** Open
+**Status:** Fixed — distances returned from search_documents tool and converted to relevance scores
 
 ## Eval Summary — Phase 1 RAG Pipeline
 **Date:** 28 July 2026  

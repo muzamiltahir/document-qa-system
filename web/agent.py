@@ -54,7 +54,8 @@ async def search_documents(question:str, collection) -> list[str]:
     
     return {
         "chunks": query_result["documents"][0],
-        "sources": query_result["metadatas"][0]
+        "sources": query_result["metadatas"][0],
+        "distances": query_result["distances"][0]
     }
 
 async def get_document_info(collection):
@@ -124,7 +125,7 @@ async def run_agent(question: str, collection, conversation_history: list) -> di
     iteration = 0
     tool_calls_made = 0
     array_messages = []
-    sources = []
+    sources_with_distances = []
 
     array_messages.append({
         "role": "system", 
@@ -194,7 +195,7 @@ async def run_agent(question: str, collection, conversation_history: list) -> di
 
                 return {"answer": answer,
                         "tool_calls_made": tool_calls_made, 
-                        "sources": sources}
+                        "sources": sources_with_distances}
 
             #["content"]
             array_messages.append(message)
@@ -220,10 +221,13 @@ async def run_agent(question: str, collection, conversation_history: list) -> di
                     )              
 
                     #sources.extend(tool_result.get("sources", []))
-                    for s in tool_result.get("sources", []):
+                    for s, d in zip(tool_result.get("sources", []), tool_result.get("distances", [])):
                         chunk_id = s.get("source")
-                        if chunk_id and chunk_id not in sources:
-                            sources.append(chunk_id)
+                        if chunk_id and not any(x["chunk"] == chunk_id for x in sources_with_distances):
+                            sources_with_distances.append({
+                                "chunk": chunk_id,
+                                "distance": d
+                            })
 
                 elif function_name == "get_document_info":
 

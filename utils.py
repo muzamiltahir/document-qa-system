@@ -98,6 +98,7 @@ async def generate_batch_embeddings(chunks: list[str], batch_size:int=50):
 
 
 async def fn_extract_text_and_chunk(file:str):
+	filename = Path(file).name  # extracts "document.pdf" from full path
 	chunk_count = 0
 	with pdfplumber.open(file) as pdf:	
 		page_text = ''
@@ -108,7 +109,7 @@ async def fn_extract_text_and_chunk(file:str):
 	
 		list_vectors = await generate_batch_embeddings(chunks_list)
 
-		chunk_count = fn_store_embeddings(chunks_list,list_vectors)
+		chunk_count = fn_store_embeddings(chunks_list,list_vectors,filename)
 
 	return chunk_count
 
@@ -129,16 +130,23 @@ def fn_chunk_text(text: str, chunk_size: int = 200, overlap: int = 50):
 	return final_list
 
 
-def fn_store_embeddings(chunk: list[str], embeddings: list[list[float]]):
+def fn_store_embeddings(chunk: list[str], embeddings: list[list[float]], filename:str = "Unknown"):
 	chroma_client = chromadb.PersistentClient(path=str(VECTOR_STORE))
+
+	# delete existing collection if it exists
+	try:
+		chroma_client.delete_collection(name="documents3")
+	except Exception:
+		pass  # collection didn't exist, that's fine
+
 	collection = chroma_client.get_or_create_collection(
 		name="documents3",
 		metadata={"hnsw:space": "cosine"}
 	)
 	chunk_index_list = []
 	check_id_list = []
-	for i in range(len(chunk)):
-		chunk_index_list.append({"source":f"chunk_{i}"})
+	for i, c in enumerate(chunk):
+		chunk_index_list.append({"source":f"chunk_{i}", "filename": filename})
 		check_id_list.append(f"chunk_{i}")
 		
 	collection.add(
