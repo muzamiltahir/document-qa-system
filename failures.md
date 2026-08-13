@@ -90,6 +90,26 @@ keyword search. Use keyword search for existence queries.
 **Finding:** Yammer on" genuinely isn't being retrieved even with n_results=10. This is a real retrieval gap for alphabetically distant, low-frequency terms. 
 **Status:** Open
 
+## F008 — get_document_info Returns Unknown Filename
+**Date:** 13 August 2026
+**Function:** get_document_info in agent.py
+**Problem:** Document filename is not stored in ChromaDB chunk metadata 
+during ingestion. fn_store_embeddings in utils.py only stores chunk ID 
+as source. get_document_info always returns "Unknown" for document name.
+**Root Cause:** Metadata schema designed for retrieval only — filename 
+not included at write time.
+**Fix:** Update fn_store_embeddings to accept and store filename in 
+chunk metadata:
+    {"source": "chunk_0", "filename": "document.pdf"}
+Then get_document_info can retrieve it from any chunk's metadata.
+**Status:** Open
+
+## F009 — Agent Citations Show 0% Relevance
+**Cause:** Agent returns chunk IDs from tool calls but no distance scores.
+Distance scores only available from direct ChromaDB query results.
+**Fix:** Return distances alongside sources from search_documents tool,
+pass them through run_agent return value.
+**Status:** Open
 
 ## Eval Summary — Phase 1 RAG Pipeline
 **Date:** 28 July 2026  

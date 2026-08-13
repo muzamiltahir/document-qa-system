@@ -8,6 +8,7 @@ from pydantic import BaseModel
 import os
 import sys
 from pathlib import Path
+from web.agent import run_agent
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -48,6 +49,7 @@ class Citation(BaseModel):
 class Output(BaseModel):
     answer:str
     citation:list[Citation] = []
+    toolcalls:int=0
 
 class ClearRequest(BaseModel):
     sessionid: str
@@ -119,6 +121,38 @@ async def clear_conversation_history(input:ClearRequest):
         return ClearResponse(status="success",message="Conversation history cleared")
 
     return ClearResponse(status="failed",message="Conversation history not found")
-            
+
+
+@app.post("/agent-ask")
+async def agent_ask(user_input: UserInput) -> Output:
+    question = user_input.question
+    sessionid = user_input.sessionid
+
+    conversation_history = conversation_store.get(sessionid,[])
+
+    result = await run_agent(
+            question=question,
+            collection=collection,
+            conversation_history=conversation_history
+        )
+
+    generated_answer = result['answer']
+
+    output = Output(answer=generated_answer,toolcalls=result['tool_calls_made'])    
+
+    for s_id in result['sources']:
+        citation = Citation(chunk = s_id ,relevance = 0.0)
+        output.citation.append(citation)
+
+    conversation_history.append({
+    'question':question,
+    'answer':generated_answer
+    })    
+
+    conversation_store[sessionid] = conversation_history
+
+    return output
+
+
 app.mount("/",StaticFiles(directory="web/static",html=True), name="static")
      

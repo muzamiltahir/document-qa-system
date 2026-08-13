@@ -502,6 +502,12 @@
     <!-- Question input — pinned at bottom via order -->
     <div class="question-area" style="margin-top:auto;">
       <label for="question-input">Ask a question</label>
+
+      <label style="font-size:12px; color: var(--muted); display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="agent-mode"> 
+        Agent mode — better for complex or multi-part questions
+      </label>
+
       <div class="input-row">
         <input
           type="text"
@@ -632,8 +638,11 @@
     answerArea.classList.remove('visible');
     loading.classList.add('visible');
 
+    const agentMode = document.getElementById('agent-mode').checked;
+    const endpoint = agentMode ? '/agent-ask' : '/ask';
+
     try {
-      const res = await fetch('/ask', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question, sessionid: sessionId })
@@ -645,6 +654,18 @@
       answerArea.classList.add('visible');
 
       answerText.textContent = data.answer;
+
+      if (agentMode && data.toolcalls > 0) {
+          // remove previous tool call message if present
+          const prevToolMsg = document.getElementById('tool-call-msg');
+          if (prevToolMsg) prevToolMsg.remove();
+
+          answerText.insertAdjacentHTML('afterend', 
+              `<p id="tool-call-msg" style="font-size:11px; color:var(--muted); margin-top:8px;">
+              🔧 Agent made ${data.toolcalls} search${data.toolcalls > 1 ? 'es' : ''} to answer this
+              </p>`
+          );
+      }
 
       // Citations
       citationsList.innerHTML = '';
@@ -668,6 +689,10 @@
 
     } catch (err) {
       loading.classList.remove('visible');
+      // remove previous tool call message if present
+      const prevToolMsg = document.getElementById('tool-call-msg');
+      if (prevToolMsg) prevToolMsg.remove();
+      
       answerArea.classList.add('visible');
       answerText.textContent = 'Something went wrong. Please try again.';
       citationsList.innerHTML = '';
@@ -712,6 +737,9 @@
     emptyState.style.display = '';
     answerText.textContent = '';
     citationsList.innerHTML = '';
+    // remove previous tool call message if present
+    const prevToolMsg = document.getElementById('tool-call-msg');
+    if (prevToolMsg) prevToolMsg.remove();
   });
 </script>
 </body>

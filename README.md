@@ -4,6 +4,7 @@
 This system provides a way to get answers to the questions asked by users about a given document. The document types supported currently are plain textual PDF files as the retrieval of text from these types of PDF files is simple compared to scanned PDFs.
 Apart from getting the answers, users also get source citations showing which chunk the answer came from and a relevance score.
 The system is accessible via a web interface — upload a PDF, ask questions, and view answers with source citations directly in the browser.
+An agent mode is also available for complex or multi-part questions — the agent makes multiple targeted searches and synthesises the results.
 
 ## Screenshots
 
